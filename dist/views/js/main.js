@@ -402,67 +402,32 @@ var pizzaElementGenerator = function(i) {
 var resizePizzas = function(size) {
   window.performance.mark("mark_start_resize");   // User Timing API function
 
-  // Changes the value for the size of the pizza above the slider
-  function changeSliderLabel(size) {
-    switch(size) {
-      case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
-        return;
-      case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
-        return;
-      case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
-        return;
-      default:
-        console.log("bug in changeSliderLabel");
-    }
-  }
+    // Changes the value for the size of the pizza above the slider
+    var pizzahContainers = document.getElementsByClassName('randomPizzaContainer');
+    var windowWidth = document.getElementById('randomPizzas').offsetWidth;
+    var pizzahSize = document.getElementById('pizzaSize');
+    var width = 0;
 
-  changeSliderLabel(size);
-
-   // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
-  function determineDx (elem, size) {
-    var oldWidth = elem.offsetWidth;
-    var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
-    var oldSize = oldWidth / windowWidth;
-
-    // Changes the slider value to a percent width
-    function sizeSwitcher (size) {
-      switch(size) {
+    switch (size) {
         case "1":
-          return 0.25;
+            width = windowWidth * 0.25;
+            pizzahSize.textContent = 'Small';
+            break;
         case "2":
-          return 0.3333;
+            width = windowWidth * 0.3333;
+            pizzahSize.textContent = 'Medium';
+            break;
         case "3":
-          return 0.5;
+            width = windowWidth * 0.5;
+            pizzahSize.textContent = 'Large';
+            break;
         default:
-          console.log("bug in sizeSwitcher");
-      }
+            console.log('invalid size');
     }
 
-    var newSize = sizeSwitcher(size);
-    var dx = (newSize - oldSize) * windowWidth;
-
-    return dx;
-  }
-
-    // Iterates through pizza elements on the page and changes their widths
-    // getElementsByClassName will be better for performance here
-  function changePizzaSizes(size) {
-
-    // opt performance for pizzah element manipulation
-    var pizzahContainer = document.getElementsByClassName("randomPizzaContainer");
-    var dx = determineDx(pizzahContainer[0], size);
-    var newWidth = determineDx(pizzahContainer[0].offsetWidth + dx) + 'px';
-
-    // much cleaner then before
-    for (var i = 0; i < pizzahContainer.length; i++) {
-      pizzahContainer[i].style.width = newWidth;
+    for (var i = 0; i < pizzahContainers.length; i++) {
+      pizzahContainers[i].style.width = width + 'px';
     }
-  }
-
-  changePizzaSizes(size);
 
   // User Timing API is awesome
   window.performance.mark("mark_end_resize");
@@ -474,9 +439,9 @@ var resizePizzas = function(size) {
 window.performance.mark("mark_start_generating"); // collect timing data
 
 // This for-loop actually creates and appends all of the pizzas when the page loads
+var pizzahsDiv = document.getElementById("randomPizzas");
 for (var i = 2; i < 100; i++) {
-  var pizzasDiv = document.getElementById("randomPizzas");
-  pizzasDiv.appendChild(pizzaElementGenerator(i));
+  pizzahsDiv.appendChild(pizzaElementGenerator(i));
 }
 
 // User Timing API again. These measurements tell you how long it took to generate the initial pizzas
@@ -503,26 +468,29 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
-function updatePositions() {
-  frame++;
-  window.performance.mark("mark_start_frame");
+function updatePositions(evt) {
+    frame++;
+    window.performance.mark("mark_start_frame");
 
-  var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
-    // document.body.scrollTop is no longer supported in Chrome.
-    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-    var phase = Math.sin((scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-  }
+    var items = document.getElementsByClassName('mover');
+    var scrollTop = (evt && evt.target && evt.target.scrollingElement) ? evt.target.scrollingElement.scrollTop : 0;
+    var theta = scrollTop / 1250;
+    var i, n = items.length;
+    var phase;
 
-  // User Timing API to the rescue again. Seriously, it's worth learning.
-  // Super easy to create custom metrics.
-  window.performance.mark("mark_end_frame");
-  window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
-  if (frame % 10 === 0) {
-    var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
-    logAverageFrame(timesToUpdatePosition);
-  }
+    for (i = 0; i < n; i++) {
+        phase = Math.sin(theta + (i % 5));
+        items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    }
+
+    // User Timing API to the rescue again. Seriously, it's worth learning.
+    // Super easy to create custom metrics.
+    window.performance.mark("mark_end_frame");
+    window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
+    if (frame % 10 === 0) {
+        var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
+        logAverageFrame(timesToUpdatePosition);
+    }
 }
 
 // runs updatePositions on scroll
@@ -538,17 +506,19 @@ document.addEventListener('DOMContentLoaded', function() {
     var windowInnerWidth = window.innerWidth;
 
     if (windowInnerWidth >= 1200) {
-      pizzahCount = 60;
+        pizzahCount = 60;
     }
     else if (windowInnerWidth >= 960) {
-      pizzahCount = 45;
+        pizzahCount = 45;
     }
     else if (windowInnerWidth >= 760) {
-      pizzahCount = 30;
+        pizzahCount = 30;
     }
     else {
-      pizzahCount = 15;
+        pizzahCount = 15;
     }
+
+    var movingPizzahs = document.getElementById("movingPizzas1");
 
     for (var i = 0; i < pizzahCount; i++) {
         var elem = document.createElement('img');
@@ -558,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
         elem.style.width = "73.333px";
         elem.basicLeft = (i % cols) * s;
         elem.style.top = (Math.floor(i / cols) * s) + 'px';
-        document.querySelector("#movingPizzas1").appendChild(elem);
+        movingPizzahs.appendChild(elem);
     }
     updatePositions();
 });
