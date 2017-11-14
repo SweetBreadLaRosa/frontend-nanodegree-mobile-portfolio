@@ -515,26 +515,16 @@ document.addEventListener('DOMContentLoaded', function() {
     var cols = 8;
     var s = 256;
 
-    // this is doing too much, cant have 200 pizzas every time, lets slim it down depending on window width
-    var pizzahCount = 0;
-    var windowInnerWidth = window.innerWidth;
+    // determine rows by dividing the height of the screen by the s value per feedback
+    // used math.ceil() returns the smallest integer greater than or equal to a given number
+    var heightOfScreen = screen.height;
+    var rows = Math.ceil(heightOfScreen / s);
 
-    if (windowInnerWidth >= 1200) {
-        pizzahCount = 60;
-    }
-    else if (windowInnerWidth >= 960) {
-        pizzahCount = 45;
-    }
-    else if (windowInnerWidth >= 760) {
-        pizzahCount = 30;
-    }
-    else {
-        pizzahCount = 15;
-    }
+    var numberOfPizzahs = rows * cols;
 
     var movingPizzahs = document.getElementById("movingPizzas1");
 
-    for (var i = 0; i < pizzahCount; i++) {
+    for (var i = 0; i < numberOfPizzahs; i++) {
         var elem = document.createElement('img');
         elem.className = 'mover';
         elem.src = "images/pizza.png";
