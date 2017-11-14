@@ -398,40 +398,49 @@ var pizzaElementGenerator = function(i) {
     return pizzaContainer;
 };
 
-// refactor
+var manipulateSizeBySlider = function(size) {
+
+    var windowWidth = document.getElementById('randomPizzas').offsetWidth;
+    var pizzahSize = document.getElementById('pizzaSize');
+
+    // Used if statement because it reads better for me, more familiar
+    if (size === '1') {
+        pizzahSize.innerHTML = 'Small';
+        return windowWidth * 0.25;
+    }
+    else if (size === '2') {
+        pizzahSize.innerHTML = 'Medium';
+        return windowWidth * 0.3333;
+    }
+    else if (size === '3') {
+        pizzahSize.innerHTML = 'Large';
+        return windowWidth * 0.5;
+
+    }
+    else {
+        // don't really think I need this but keeping it here to be safe
+        console.log('invalid size/width');
+    }
+};
+
+var changePizzahSizes = function(width) {
+
+    var pizzahContainers = document.getElementsByClassName('randomPizzaContainer');
+
+    for (var i = 0; i < pizzahContainers.length; i++) {
+        pizzahContainers[i].style.width = width + 'px';
+    }
+}
+
 // resizePizzas(size) is called when the slider in the "Our Pizzas" section of the website moves.
 var resizePizzas = function(size) {
     window.performance.mark("mark_start_resize");   // User Timing API function
 
-    // Changes the value for the size of the pizza above the slider
-    var pizzahContainers = document.getElementsByClassName('randomPizzaContainer');
-    var windowWidth = document.getElementById('randomPizzas').offsetWidth;
-    var pizzahSize = document.getElementById('pizzaSize');
-    var width = 0;
+    // grab width from function
+    var width = manipulateSizeBySlider(size);
 
-    // changeSliderlabel and sizeSwitcher logic together in switch
-    switch (size) {
-        case "1":
-            width = windowWidth * 0.25;
-            pizzahSize.textContent = 'Small';
-            break;
-        case "2":
-            width = windowWidth * 0.3333;
-            pizzahSize.textContent = 'Medium';
-            break;
-        case "3":
-            width = windowWidth * 0.5;
-            pizzahSize.textContent = 'Large';
-            break;
-        default:
-            console.log('invalid size/width');
-    }
-
-
-    // changePizzaSizes function refactored
-    for (var i = 0; i < pizzahContainers.length; i++) {
-        pizzahContainers[i].style.width = width + 'px';
-    }
+    // change pizzah sizes
+    changePizzahSizes(width);
 
     // User Timing API is awesome
     window.performance.mark("mark_end_resize");
@@ -506,7 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var cols = 8;
     var s = 256;
 
-    // this is doing too much, cant have 200 pizzas everytime, lets slim it down depending on window width
+    // this is doing too much, cant have 200 pizzas every time, lets slim it down depending on window width
     var pizzahCount = 0;
     var windowInnerWidth = window.innerWidth;
 

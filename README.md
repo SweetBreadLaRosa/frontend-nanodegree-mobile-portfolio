@@ -1,4 +1,4 @@
-# Frontend Nanodegree: Website Performance Optimization Project
+# Frontend Nanodegree: Website Performance Optimization Project "Pizah Pizah"
 
 ### Desktop PSI Score: 96
 ### Mobile PSI Score: 90
@@ -45,9 +45,10 @@ dist/index.html
 
 #### resizePizzas():
     * Moved calls (select/query actions to get elements) out of loop so that they do not need to be called
-     more than they need to.
-    * Refactored changeSliderLabel and sizeSwitcher function logic into one switch statement
-    * Moved getElementById out of for-loop where the pizzas are created and appended on page load
+     more than they need to (below are examples).
+    * Refactored changeSliderLabel and sizeSwitcher function logic together into manipulateSizeBySlider()
+    * Moved getElementById out of for-loop where the pizzas are created and appended on page load and created
+    a function for it named changePizzahSizes()
 
 #### eventListener('DOMContentLoaded')
     * This function was doing way too much because no matter the size of the

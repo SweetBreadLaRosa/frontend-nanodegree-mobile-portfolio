@@ -1,5 +1,4 @@
 'use strict';
-
 var del = require('del');
 var runSequence = require('run-sequence');
 var psi = require('psi');
@@ -11,18 +10,18 @@ var cssMinify = require('gulp-clean-css');
 var htmlMinify = require('gulp-htmlmin');
 
 // global constants
-var portVal = 3020;
-var site;
+var portVal = 8000;
+var site = '';
 
 // default task
 gulp.task('default', ['psi'], function () {
     process.exit();
 });
 
-gulp.task('start', ['build.dist', 'watch.src']);
+gulp.task('start', ['build', 'watch']);
 
 // Build dist
-gulp.task('build.dist', function (done) {
+gulp.task('build', function (done) {
     runSequence(
         'clean',
         'minify.js',
@@ -67,7 +66,7 @@ gulp.task('copy', function () {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('watch.src', function () {
+gulp.task('watch', function () {
     gulp.watch([
         'src/**/*.js',
         'src/**/*.css',
@@ -86,7 +85,7 @@ gulp.task('browser-sync-psi', function() {
     });
 });
 
-gulp.task('ngrok-url', function(done) {
+gulp.task('ngrok', function(done) {
     return ngrok.connect(portVal, function (err, url) {
         site = url + '/index.html';
         console.log('serving your tunnel from: ' + site);
@@ -94,7 +93,7 @@ gulp.task('ngrok-url', function(done) {
     });
 });
 
-gulp.task('psi-desktop', function () {
+gulp.task('desktop', function () {
     return psi(site, {
         nokey: 'true',
         strategy: 'desktop'
@@ -103,23 +102,23 @@ gulp.task('psi-desktop', function () {
     });
 });
 
-gulp.task('psi-mobile', function () {
+gulp.task('mobile', function () {
     return psi(site, {
         nokey: 'true',
         strategy: 'mobile'
     }).then(function (data) {
-        console.log('Speed score: ' + data.ruleGroups.SPEED.score);
-        console.log('Usability score: ' + data.ruleGroups.USABILITY.score);
+        console.log('Speed: ' + data.ruleGroups.SPEED.score);
+        console.log('Usability: ' + data.ruleGroups.USABILITY.score);
     });
 });
 
 gulp.task('psi', function (done) {
     runSequence(
-        'build.dist',
+        'build',
         'browser-sync-psi',
-        'ngrok-url',
-        'psi-desktop',
-        'psi-mobile',
+        'ngrok',
+        'desktop',
+        'mobile',
         done
     );
 });
