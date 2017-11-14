@@ -438,7 +438,7 @@ var resizePizzas = function(size) {
 
 window.performance.mark("mark_start_generating"); // collect timing data
 
-// This for-loop actually creates and appends all of the pizzas when the page loads
+// This for-loop actually creates and appends all of the pizzas when the page loads, had a mistake with misspelling
 var pizzahsDiv = document.getElementById("randomPizzas");
 for (var i = 2; i < 100; i++) {
     pizzahsDiv.appendChild(pizzaElementGenerator(i));
@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
     for (var i = 0; i < pizzahCount; i++) {
         var elem = document.createElement('img');
         elem.className = 'mover';
-        elem.src = "images/pizza.png";
+        elem.src = "images/pizza.jpg";
         elem.style.height = "100px";
         elem.style.width = "73.333px";
         elem.basicLeft = (i % cols) * s;
