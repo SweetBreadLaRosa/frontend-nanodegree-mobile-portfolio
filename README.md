@@ -1,6 +1,6 @@
 # Frontend Nanodegree: Website Performance Optimization Project
 
-#### Desktop PSI Score: 95
+#### Desktop PSI Score: 96
 #### Mobile PSI Score: 90
 
 ---
